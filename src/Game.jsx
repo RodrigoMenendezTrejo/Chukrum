@@ -58,6 +58,7 @@ export default function Game() {
   // Game phase management
   const [gamePhase, setGamePhase] = useState("playing");
   const [chukrumCaller, setChukrumCaller] = useState(null);
+  const [finalRoundTurnsLeft, setFinalRoundTurnsLeft] = useState(0); // Tracks remaining turns in final round
   const [winner, setWinner] = useState(null);
 
   // Special power states
@@ -104,6 +105,7 @@ export default function Game() {
     setCurrentPlayer(1);
     setGamePhase("playing");
     setChukrumCaller(null);
+    setFinalRoundTurnsLeft(0);
     setWinner(null);
     setDrawnCard(null);
     setSpecialAction("none");
@@ -152,12 +154,16 @@ export default function Game() {
   }, [player1Hand, player2Hand]);
 
   const nextPlayer = useCallback(() => {
-    if (gamePhase === "finalRound" && currentPlayer !== chukrumCaller) {
-      endGame();
-    } else {
-      setCurrentPlayer((p) => (p === 1 ? 2 : 1));
+    if (gamePhase === "finalRound") {
+      const turnsLeft = finalRoundTurnsLeft - 1;
+      setFinalRoundTurnsLeft(turnsLeft);
+      if (turnsLeft <= 0) {
+        endGame();
+        return;
+      }
     }
-  }, [gamePhase, currentPlayer, chukrumCaller, endGame]);
+    setCurrentPlayer((p) => (p === 1 ? 2 : 1));
+  }, [gamePhase, finalRoundTurnsLeft, endGame]);
 
   // Handle drawing a card
   const handleDrawCard = () => {
@@ -469,7 +475,8 @@ export default function Game() {
 
     setChukrumCaller(1);
     setGamePhase("finalRound");
-    setMessage("CHUKRUM! Bot gets one final turn...");
+    setFinalRoundTurnsLeft(2); // Opponent gets 1 turn, then caller gets 1 final turn
+    setMessage("CHUKRUM! Bot gets one final turn, then you get one more...");
     setCurrentPlayer(2);
     setTimeout(() => botTurn(), 1000);
   };
@@ -585,8 +592,7 @@ export default function Game() {
       // === MATCH DISCARD CHECK (Extreme only, before drawing action) ===
       if (tryMatchDiscard()) {
         setDiscardPile(prev => [...prev, drawn]);
-        setCurrentPlayer(1);
-        if (gamePhase === "finalRound" && chukrumCaller === 1) setTimeout(() => endGame(), 500);
+        nextPlayer();
         return;
       }
 
@@ -603,8 +609,7 @@ export default function Game() {
         }
         setDiscardPile(prev => [...prev, drawn]);
         setMessage("Bot used Jack to peek at a card. Your turn!");
-        setCurrentPlayer(1);
-        if (gamePhase === "finalRound" && chukrumCaller === 1) setTimeout(() => endGame(), 500);
+        nextPlayer();
         return;
       }
 
@@ -619,8 +624,7 @@ export default function Game() {
           if (!peekedCard) {
             setDiscardPile(prev => [...prev, drawn]);
             setMessage("Bot used Queen. Your turn!");
-            setCurrentPlayer(1);
-            if (gamePhase === "finalRound" && chukrumCaller === 1) setTimeout(() => endGame(), 500);
+            nextPlayer();
             return;
           }
 
@@ -651,8 +655,7 @@ export default function Game() {
                 discardHistory: [...prev.discardHistory, drawn],
               }));
               setMessage("Bot used Queen to swap cards! Your turn!");
-              setCurrentPlayer(1);
-              if (gamePhase === "finalRound" && chukrumCaller === 1) setTimeout(() => endGame(), 500);
+              nextPlayer();
             });
             return;
           }
@@ -660,8 +663,7 @@ export default function Game() {
         setDiscardPile(prev => [...prev, drawn]);
         setBotMemory(prev => ({ ...prev, discardHistory: [...prev.discardHistory, drawn] }));
         setMessage("Bot used Queen to peek. Your turn!");
-        setCurrentPlayer(1);
-        if (gamePhase === "finalRound" && chukrumCaller === 1) setTimeout(() => endGame(), 500);
+        nextPlayer();
         return;
       }
 
@@ -676,8 +678,7 @@ export default function Game() {
           if (!peekedCard) {
             setDiscardPile(prev => [...prev, drawn]);
             setMessage("Bot used King. Your turn!");
-            setCurrentPlayer(1);
-            if (gamePhase === "finalRound" && chukrumCaller === 1) setTimeout(() => endGame(), 500);
+            nextPlayer();
             return;
           }
 
@@ -708,8 +709,7 @@ export default function Game() {
                 discardHistory: [...prev.discardHistory, drawn],
               }));
               setMessage("Bot used King to swap cards! Your turn!");
-              setCurrentPlayer(1);
-              if (gamePhase === "finalRound" && chukrumCaller === 1) setTimeout(() => endGame(), 500);
+              nextPlayer();
             });
             return;
           }
@@ -717,8 +717,7 @@ export default function Game() {
         setDiscardPile(prev => [...prev, drawn]);
         setBotMemory(prev => ({ ...prev, discardHistory: [...prev.discardHistory, drawn] }));
         setMessage("Bot used King to peek. Your turn!");
-        setCurrentPlayer(1);
-        if (gamePhase === "finalRound" && chukrumCaller === 1) setTimeout(() => endGame(), 500);
+        nextPlayer();
         return;
       }
 
@@ -799,17 +798,15 @@ export default function Game() {
             discardHistory: [...prev.discardHistory, replacedCard],
           }));
           setMessage(`Bot swapped card #${swapIndex + 1}. Your turn!`);
-          setCurrentPlayer(1);
+          nextPlayer();
           botTurnInProgress.current = false;
-          if (gamePhase === "finalRound" && chukrumCaller === 1) setTimeout(() => endGame(), 1000);
         }, 2000); // Increased timing for readability
       } else {
         setDiscardPile(prev => [...prev, drawn]);
         setBotMemory(prev => ({ ...prev, discardHistory: [...prev.discardHistory, drawn] }));
         setMessage("Bot discarded. Your turn!");
-        setCurrentPlayer(1);
+        nextPlayer();
         botTurnInProgress.current = false;
-        if (gamePhase === "finalRound" && chukrumCaller === 1) setTimeout(() => endGame(), 1000);
       }
     };
 
@@ -872,14 +869,15 @@ export default function Game() {
       if (shouldCallChukrum) {
         setChukrumCaller(2);
         setGamePhase("finalRound");
-        setMessage("Bot calls CHUKRUM! You get one final turn.");
+        setFinalRoundTurnsLeft(2); // Player gets 1 turn, then bot gets 1 final turn
+        setMessage("Bot calls CHUKRUM! You get one final turn, then bot gets one more...");
         setCurrentPlayer(1);
         return;
       }
     }
 
     setTimeout(makeDecision, 800);
-  }, [deck, player1Hand, player2Hand, botMemory, gamePhase, chukrumCaller, endGame, difficulty, discardPile, animateSwap]);
+  }, [deck, player1Hand, player2Hand, botMemory, gamePhase, chukrumCaller, endGame, difficulty, discardPile, animateSwap, nextPlayer]);
 
   // Auto-trigger bot turn when it's the bot's turn (for Extreme mode first turn)
   useEffect(() => {
@@ -898,7 +896,7 @@ export default function Game() {
   // Check if any player's hand is empty - end game immediately
   // Only check after game has properly started (both had cards at some point)
   useEffect(() => {
-    // Don't trigger at game start when hands are being dealt
+    // Don't trigger at game start when hands are being dealt, or during finalRound
     if (gamePhase === "playing" && deck.length < 44 && (player1Hand.length === 0 || player2Hand.length === 0)) {
       setMessage("A player has no cards left! Game ends!");
       setTimeout(() => endGame(), 500);
