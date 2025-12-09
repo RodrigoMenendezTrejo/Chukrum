@@ -211,54 +211,56 @@ export default function GameSetup() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="fixed top-[36%] left-[37%] z-50 transform -translate-x-1/2 -translate-y-1/2 
-                         bg-white/10 border border-white/20 backdrop-blur-md rounded-3xl shadow-2xl 
-                         p-8 w-[90%] max-w-lg text-center"
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              onClick={(e) => e.stopPropagation()}
             >
-              <button
-                onClick={() => setShowRules(false)}
-                className="absolute top-4 right-4 text-white hover:text-red-400"
-              >
-                <X className="w-6 h-6" />
-              </button>
+              <div className="bg-white/10 border border-white/20 backdrop-blur-md rounded-3xl shadow-2xl 
+                         p-4 sm:p-8 w-full max-w-lg text-center max-h-[90vh] overflow-y-auto relative">
+                <button
+                  onClick={() => setShowRules(false)}
+                  className="absolute top-4 right-4 text-white hover:text-red-400"
+                >
+                  <X className="w-6 h-6" />
+                </button>
 
-              <h2 className="text-3xl font-extrabold mb-6 bg-gradient-to-r from-lime-200 via-emerald-300 to-green-400 bg-clip-text text-transparent">
-                Chukrum Rules
-              </h2>
+                <h2 className="text-3xl font-extrabold mb-6 bg-gradient-to-r from-lime-200 via-emerald-300 to-green-400 bg-clip-text text-transparent">
+                  Chukrum Rules
+                </h2>
 
-              <div className="text-gray-100 space-y-4 text-center leading-relaxed">
-                <p>
-                  🃏 <span className="text-emerald-300 font-semibold">Two players</span> start with four cards each.
-                  Take turns drawing from the pile and decide whether to{" "}
-                  <span className="text-yellow-300">swap</span> or{" "}
-                  <span className="text-red-400">discard</span>.
-                </p>
+                <div className="text-gray-100 space-y-4 text-center leading-relaxed">
+                  <p>
+                    🃏 <span className="text-emerald-300 font-semibold">Two players</span> start with four cards each.
+                    Take turns drawing from the pile and decide whether to{" "}
+                    <span className="text-yellow-300">swap</span> or{" "}
+                    <span className="text-red-400">discard</span>.
+                  </p>
 
-                <p>
-                  💡 The goal is simple:{" "}
-                  <span className="text-lime-300 font-semibold">
-                    finish with the lowest score
-                  </span>
-                  .
-                </p>
+                  <p>
+                    💡 The goal is simple:{" "}
+                    <span className="text-lime-300 font-semibold">
+                      finish with the lowest score
+                    </span>
+                    .
+                  </p>
 
-                <p>
-                  ♠️ <span className="text-gray-200">A = 1</span>, 2–10 = face
-                  value, J = 11, Q = 12, K = 13, but{" "}
-                  <span className="text-blue-300">7 = −1</span>.
-                </p>
+                  <p>
+                    ♠️ <span className="text-gray-200">A = 1</span>, 2–10 = face
+                    value, J = 11, Q = 12, K = 13, but{" "}
+                    <span className="text-blue-300">7 = −1</span>.
+                  </p>
 
-                <p>
-                  ⭐️ Some cards (J, Q, K) have{" "}
-                  <span className="text-pink-300">special abilities</span> that
-                  let you peek or swap cards strategically.
-                </p>
+                  <p>
+                    ⭐️ Some cards (J, Q, K) have{" "}
+                    <span className="text-pink-300">special abilities</span> that
+                    let you peek or swap cards strategically.
+                  </p>
 
-                <p>
-                  🔔 When you think your score is lowest, shout{" "}
-                  <span className="text-yellow-400 font-bold">“CHUKRUM!”</span>{" "}
-                  to trigger the final round!
-                </p>
+                  <p>
+                    🔔 When you think your score is lowest, shout{" "}
+                    <span className="text-yellow-400 font-bold">“CHUKRUM!”</span>{" "}
+                    to trigger the final round!
+                  </p>
+                </div>
               </div>
             </motion.div>
           </>

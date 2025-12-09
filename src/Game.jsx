@@ -79,6 +79,7 @@ export default function Game() {
   const [swapAnimation, setSwapAnimation] = useState(null);
   const [showResultsPopup, setShowResultsPopup] = useState(true); // Toggle results overlay
   const lastBotMatchRef = useRef(null); // Track last bot match to prevent infinite loops
+  const botTurnInProgress = useRef(false); // Prevent duplicate bot turns
   const p1Refs = useRef([]);
   const p2Refs = useRef([]);
   const drawPileRef = useRef(null);
@@ -798,14 +799,16 @@ export default function Game() {
           }));
           setMessage(`Bot swapped card #${swapIndex + 1}. Your turn!`);
           setCurrentPlayer(1);
-          if (gamePhase === "finalRound" && chukrumCaller === 1) setTimeout(() => endGame(), 500);
-        }, 1500);
+          botTurnInProgress.current = false;
+          if (gamePhase === "finalRound" && chukrumCaller === 1) setTimeout(() => endGame(), 1000);
+        }, 2000); // Increased timing for readability
       } else {
         setDiscardPile(prev => [...prev, drawn]);
         setBotMemory(prev => ({ ...prev, discardHistory: [...prev.discardHistory, drawn] }));
         setMessage("Bot discarded. Your turn!");
         setCurrentPlayer(1);
-        if (gamePhase === "finalRound" && chukrumCaller === 1) setTimeout(() => endGame(), 500);
+        botTurnInProgress.current = false;
+        if (gamePhase === "finalRound" && chukrumCaller === 1) setTimeout(() => endGame(), 1000);
       }
     };
 
@@ -879,16 +882,25 @@ export default function Game() {
 
   // Auto-trigger bot turn when it's the bot's turn (for Extreme mode first turn)
   useEffect(() => {
-    console.log("Bot turn useEffect:", { currentPlayer, gamePhase, drawnCard: !!drawnCard });
-    if (currentPlayer === 2 && gamePhase === "playing" && !drawnCard) {
-      console.log("Triggering bot turn in 1 second...");
+    if (currentPlayer === 2 && gamePhase === "playing" && !drawnCard && !botTurnInProgress.current) {
+      botTurnInProgress.current = true;
       const timer = setTimeout(() => {
-        console.log("Bot turn auto-triggered!");
         botTurn();
-      }, 1000);
-      return () => clearTimeout(timer);
+      }, 1200);
+      return () => {
+        clearTimeout(timer);
+        botTurnInProgress.current = false;
+      };
     }
   }, [currentPlayer, gamePhase, drawnCard, botTurn]);
+
+  // Check if any player's hand is empty - end game immediately
+  useEffect(() => {
+    if (gamePhase === "playing" && (player1Hand.length === 0 || player2Hand.length === 0)) {
+      setMessage("A player has no cards left! Game ends!");
+      setTimeout(() => endGame(), 500);
+    }
+  }, [player1Hand.length, player2Hand.length, gamePhase, endGame]);
 
   // Check if a card is being peeked
   const isCardPeeked = (player, index) => {
