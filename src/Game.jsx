@@ -80,6 +80,7 @@ export default function Game() {
   const [showResultsPopup, setShowResultsPopup] = useState(true); // Toggle results overlay
   const lastBotMatchRef = useRef(null); // Track last bot match to prevent infinite loops
   const botTurnInProgress = useRef(false); // Prevent duplicate bot turns
+  const actionCooldownRef = useRef(false); // Prevent rapid interactions
   const p1Refs = useRef([]);
   const p2Refs = useRef([]);
   const drawPileRef = useRef(null);
@@ -171,6 +172,7 @@ export default function Game() {
     }
 
     if (drawnCard) return; // Already holding a card
+    if (actionCooldownRef.current) return; // Wait for cooldown after match discard
 
     const newDeck = [...deck];
     const drawn = newDeck.pop();
@@ -380,6 +382,7 @@ export default function Game() {
   // MATCH DISCARD
   const handleMatchDiscard = (index) => {
     if (discardPile.length === 0 || gamePhase === "ended" || drawnCard) return;
+    if (actionCooldownRef.current) return; // Prevent rapid interactions
 
     const topDiscard = discardPile[discardPile.length - 1];
     const playerCard = player1Hand[index];
@@ -389,6 +392,9 @@ export default function Game() {
       setPlayer1Hand(newHand);
       setDiscardPile((prev) => [...prev, playerCard]);
       setMessage(`Match! You discarded your ${playerCard.rank}.`);
+      // Set cooldown to prevent immediate draw
+      actionCooldownRef.current = true;
+      setTimeout(() => { actionCooldownRef.current = false; }, 1000);
     } else {
       if (deck.length > 0) {
         const newDeck = [...deck];
