@@ -895,12 +895,14 @@ export default function Game() {
   }, [currentPlayer, gamePhase, drawnCard, botTurn]);
 
   // Check if any player's hand is empty - end game immediately
+  // Only check after game has properly started (both had cards at some point)
   useEffect(() => {
-    if (gamePhase === "playing" && (player1Hand.length === 0 || player2Hand.length === 0)) {
+    // Don't trigger at game start when hands are being dealt
+    if (gamePhase === "playing" && deck.length < 44 && (player1Hand.length === 0 || player2Hand.length === 0)) {
       setMessage("A player has no cards left! Game ends!");
       setTimeout(() => endGame(), 500);
     }
-  }, [player1Hand.length, player2Hand.length, gamePhase, endGame]);
+  }, [player1Hand.length, player2Hand.length, gamePhase, deck.length, endGame]);
 
   // Check if a card is being peeked
   const isCardPeeked = (player, index) => {
