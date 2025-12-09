@@ -921,13 +921,13 @@ export default function Game() {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-between bg-gradient-to-br from-green-950 via-green-800 to-emerald-900 text-white overflow-hidden p-6">
+    <div className="relative min-h-screen flex flex-col items-center justify-between bg-gradient-to-br from-green-950 via-green-800 to-emerald-900 text-white overflow-hidden p-2 sm:p-4 md:p-6">
       <button onClick={() => navigate("/game-setup")} className="absolute top-4 left-4 bg-black/40 hover:bg-black/60 rounded-full px-3 py-2 flex items-center gap-2">
         <ArrowLeft className="w-4 h-4" /> Back
       </button>
 
       <div className="flex items-center gap-4 mt-4 mb-2">
-        <h1 className="text-6xl font-extrabold tracking-widest bg-gradient-to-r from-lime-200 via-emerald-300 to-green-400 bg-clip-text text-transparent">
+        <h1 className="text-2xl sm:text-4xl md:text-6xl font-extrabold tracking-widest bg-gradient-to-r from-lime-200 via-emerald-300 to-green-400 bg-clip-text text-transparent">
           CHUKRUM
         </h1>
         {/* Difficulty Badge */}
@@ -943,12 +943,12 @@ export default function Game() {
         </div>
       </div>
 
-      <div className="bg-black/40 backdrop-blur-sm px-6 py-3 rounded-xl text-lg font-medium mb-4 shadow-lg max-w-2xl text-center">{message}</div>
+      <div className="bg-black/40 backdrop-blur-sm px-3 sm:px-6 py-2 sm:py-3 rounded-xl text-xs sm:text-sm md:text-lg font-medium mb-2 sm:mb-4 shadow-lg max-w-2xl text-center">{message}</div>
 
       {/* Player 2 (Bot) Hand */}
       <div className={`flex flex-col items-center ${currentPlayer === 2 ? "scale-105 text-yellow-300" : "opacity-70"}`}>
         <p className="mb-2">{currentPlayer === 2 ? "▶ Bot" : "Bot"} {gamePhase === "ended" ? `(Score: ${calculateScore(player2Hand)})` : ""}</p>
-        <div className="flex gap-4">
+        <div className="flex gap-1 sm:gap-2 md:gap-4">
           {player2Hand.map((card, i) => {
             // Only show cards at game end - peeked cards are only visible in the modal
             const showCard = gamePhase === "ended";
@@ -974,7 +974,7 @@ export default function Game() {
                   }
                 }}
                 style={animStyle}
-                className={`w-28 h-40 rounded-xl shadow-lg border-2 flex flex-col items-center justify-center text-4xl transition-all
+                className={`w-14 h-20 sm:w-20 sm:h-28 md:w-28 md:h-40 rounded-xl shadow-lg border-2 flex flex-col items-center justify-center text-lg sm:text-2xl md:text-4xl transition-all
                   ${showCard ? "bg-white " + display.color : "bg-blue-900 text-white border-blue-400"}
                   ${isPeekedPosition && !showCard ? "ring-4 ring-yellow-400/50" : ""}
                   ${canClick ? "cursor-pointer hover:ring-2 hover:ring-purple-400" : ""}
@@ -998,12 +998,12 @@ export default function Game() {
       </div>
 
       {/* Center Area */}
-      <div className="flex items-center justify-center gap-12 my-10">
+      <div className="flex items-center justify-center gap-4 sm:gap-8 md:gap-12 my-4 sm:my-6 md:my-10">
         {/* Draw Pile */}
         <div className="flex flex-col items-center justify-end translate-y-[1px]">
-          <p className="text-sm text-gray-300 mb-1 translate-y-[7px]">Draw Pile</p>
+          <p className="text-xs sm:text-sm text-gray-300 mb-1 translate-y-[7px]">Draw Pile</p>
           <div
-            className="relative w-28 h-40 mb-2 cursor-pointer select-none translate-y-[6px]"
+            className="relative w-14 h-20 sm:w-20 sm:h-28 md:w-28 md:h-40 mb-2 cursor-pointer select-none translate-y-[6px]"
             onClick={currentPlayer === 1 && !drawnCard && gamePhase !== "ended" ? handleDrawCard : undefined}
           >
             {[...Array(Math.min(8, Math.ceil(deck.length / 8)))].map((_, i) => (
@@ -1018,7 +1018,7 @@ export default function Game() {
               className="absolute flex items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 border border-blue-400 shadow-2xl"
               style={{ top: "12px", left: "13px", right: "-13px", bottom: "-12px", zIndex: 99 }}
             >
-              <Shuffle className="w-8 h-8 text-white/90" />
+              <Shuffle className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white/90" />
             </motion.div>
           </div>
           <p className="text-sm text-gray-400 mt-1 translate-y-[7px]">({deck.length})</p>
@@ -1026,8 +1026,8 @@ export default function Game() {
 
         {/* Discard pile */}
         <div className="flex flex-col items-center">
-          <p className="text-sm text-gray-300 mb-1">Discard Pile</p>
-          <div className="w-28 h-40 bg-white rounded-lg shadow-xl flex flex-col items-center justify-center text-5xl font-bold">
+          <p className="text-xs sm:text-sm text-gray-300 mb-1">Discard Pile</p>
+          <div className="w-14 h-20 sm:w-20 sm:h-28 md:w-28 md:h-40 bg-white rounded-lg shadow-xl flex flex-col items-center justify-center text-2xl sm:text-3xl md:text-5xl font-bold">
             {discardPile.length > 0 ? (
               <>
                 <div className={`${["♥", "♦"].includes(discardPile[discardPile.length - 1].suit) ? "text-red-600" : "text-gray-900"}`}>
@@ -1209,7 +1209,7 @@ export default function Game() {
       {/* Player 1 (You) Hand */}
       <div className={`flex flex-col items-center mb-8 ${currentPlayer === 1 ? "scale-105 text-yellow-300" : "opacity-70"}`}>
         <p className="mb-2">{currentPlayer === 1 ? "▶ You" : "You"} {gamePhase === "ended" ? `(Score: ${calculateScore(player1Hand)})` : ""}</p>
-        <div className="flex gap-4">
+        <div className="flex gap-1 sm:gap-2 md:gap-4">
           {player1Hand.map((card, i) => {
             const showCard = gamePhase === "ended";
             const display = getCardDisplay(card, showCard);
@@ -1226,7 +1226,7 @@ export default function Game() {
                   }
                 }}
                 style={animStyle}
-                className={`w-28 h-40 rounded-xl shadow-lg border-2 flex flex-col items-center justify-center text-4xl cursor-pointer transition-all
+                className={`w-14 h-20 sm:w-20 sm:h-28 md:w-28 md:h-40 rounded-xl shadow-lg border-2 flex flex-col items-center justify-center text-lg sm:text-2xl md:text-4xl cursor-pointer transition-all
                   ${showCard ? "bg-white " + display.color : "bg-blue-900 text-white border-blue-400"}
                   ${discardPile.length > 0 && !drawnCard && gamePhase !== "ended" ? "hover:ring-2 hover:ring-green-400" : ""}
                 `}
