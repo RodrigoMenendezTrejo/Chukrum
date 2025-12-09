@@ -3,14 +3,14 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
-// ⚠️ Replace the values below with YOUR Firebase project's config
+// ⚠️ Firebase config loaded from environment variables for security
 const firebaseConfig = {
-  apiKey: "AIzaSyCU-5-SKvM7Usa3HIgt9-F7tdyXbUoCnbM",
-  authDomain: "chukrum-pwa.firebaseapp.com",
-  projectId: "chukrum-pwa",
-  storageBucket: "chukrum-pwa.firebasestorage.app",
-  messagingSenderId: "787205980025",
-  appId: "1:787205980025:web:bfd46ca7a71cd9e35d39a8",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 // Initialize Firebase
