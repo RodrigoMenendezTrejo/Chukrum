@@ -226,7 +226,7 @@ export default function Game() {
     setHasPeekedOpponent(false);
     setMessage("You discarded your card. Bot is thinking...");
     nextPlayer();
-    setTimeout(() => botTurn(), 1500); // 1.5s delay between turns
+    // Bot turn is triggered automatically by useEffect when currentPlayer becomes 2
   };
 
   // Handle swapping drawn card with player's card (normal swap)
@@ -250,7 +250,7 @@ export default function Game() {
       }));
       setMessage("You swapped a card. Bot is thinking...");
       nextPlayer();
-      setTimeout(() => botTurn(), 1500); // 1.5s delay between turns
+      // Bot turn is triggered automatically by useEffect when currentPlayer becomes 2
     }, 'draw');
   };
 
@@ -270,7 +270,7 @@ export default function Game() {
       setHasPeekedOwn(false);
       setMessage("Jack discarded. Bot is thinking...");
       nextPlayer();
-      setTimeout(() => botTurn(), 500);
+      // Bot turn is triggered automatically by useEffect
     }, 2000);
   };
 
@@ -309,7 +309,7 @@ export default function Game() {
       setSpecialAction("none");
       setMessage("Cards swapped! Queen discarded. Bot is thinking...");
       nextPlayer();
-      setTimeout(() => botTurn(), 500);
+      // Bot turn is triggered automatically by useEffect
     });
   };
 
@@ -364,7 +364,6 @@ export default function Game() {
   };
 
   const completeKingAction = (msg = "King discarded. Bot is thinking...") => {
-    console.log("completeKingAction called:", msg);
     setPeekedCard(null);
     setOpponentPeekedCard(null);
     setSelectedOwnIndex(null);
@@ -374,13 +373,8 @@ export default function Game() {
     setDrawnCard(null);
     setSpecialAction("none");
     setMessage(msg);
-    // Explicitly set current player to bot and trigger bot turn
-    setCurrentPlayer(2);
-    console.log("Starting bot turn in 500ms...");
-    setTimeout(() => {
-      console.log("botTurn called!");
-      botTurn();
-    }, 500);
+    nextPlayer();
+    // Bot turn is triggered automatically by useEffect
   };
 
   // MATCH DISCARD
@@ -478,7 +472,7 @@ export default function Game() {
     setFinalRoundTurnsLeft(2); // Opponent gets 1 turn, then caller gets 1 final turn
     setMessage("CHUKRUM! Bot gets one final turn, then you get one more...");
     setCurrentPlayer(2);
-    setTimeout(() => botTurn(), 1000);
+    // Bot turn is triggered automatically by useEffect
   };
 
   // BOT TURN with difficulty-based AI
