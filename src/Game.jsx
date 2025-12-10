@@ -879,9 +879,13 @@ export default function Game() {
     setTimeout(makeDecision, 800);
   }, [deck, player1Hand, player2Hand, botMemory, gamePhase, chukrumCaller, endGame, difficulty, discardPile, animateSwap, nextPlayer]);
 
-  // Auto-trigger bot turn when it's the bot's turn (for Extreme mode first turn)
+  // Auto-trigger bot turn when it's the bot's turn
   useEffect(() => {
-    if (currentPlayer === 2 && gamePhase === "playing" && !drawnCard && !botTurnInProgress.current) {
+    const canTrigger = currentPlayer === 2 &&
+      (gamePhase === "playing" || gamePhase === "finalRound") &&
+      !drawnCard &&
+      !botTurnInProgress.current;
+    if (canTrigger) {
       botTurnInProgress.current = true;
       const timer = setTimeout(() => {
         botTurn();
@@ -894,10 +898,10 @@ export default function Game() {
   }, [currentPlayer, gamePhase, drawnCard, botTurn]);
 
   // Check if any player's hand is empty - end game immediately
-  // Only check after game has properly started (both had cards at some point)
+  // Only check after game has properly started (deck dealt and a turn has been played)
   useEffect(() => {
-    // Don't trigger at game start when hands are being dealt, or during finalRound
-    if (gamePhase === "playing" && deck.length < 44 && (player1Hand.length === 0 || player2Hand.length === 0)) {
+    // Require: deck exists, deck has been drawn from (< 44), a hand is empty
+    if (gamePhase === "playing" && deck.length > 0 && deck.length < 44 && (player1Hand.length === 0 || player2Hand.length === 0)) {
       setMessage("A player has no cards left! Game ends!");
       setTimeout(() => endGame(), 500);
     }
