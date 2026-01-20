@@ -7,6 +7,9 @@ export default function GameSetup() {
   const navigate = useNavigate();
   const [showRules, setShowRules] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState("normal");
+  const [targetScore, setTargetScore] = useState(null); // null = single match
+  const [customScore, setCustomScore] = useState("");
+  const [showCustomInput, setShowCustomInput] = useState(false);
 
   const difficulties = [
     { id: "easy", label: "Easy", icon: Leaf, color: "from-green-400 to-emerald-500", hoverColor: "hover:bg-green-600", description: "Relaxed bot, perfect for learning" },
@@ -14,8 +17,22 @@ export default function GameSetup() {
     { id: "extreme", label: "Extreme", icon: Flame, color: "from-red-500 to-rose-600", hoverColor: "hover:bg-red-600", description: "Ruthless AI, good luck!" },
   ];
 
+  const targetScoreOptions = [
+    { value: null, label: "Single Match" },
+    { value: 20, label: "First to 20" },
+    { value: 30, label: "First to 30" },
+    { value: 50, label: "First to 50" },
+    { value: "custom", label: "Custom" },
+  ];
+
   const handlePlay = () => {
-    navigate("/game", { state: { difficulty: selectedDifficulty } });
+    // Determine final target score
+    let finalTarget = targetScore;
+    if (targetScore === "custom" && customScore) {
+      finalTarget = parseInt(customScore, 10);
+      if (isNaN(finalTarget) || finalTarget < 10) finalTarget = 20; // Minimum 10
+    }
+    navigate("/game", { state: { difficulty: selectedDifficulty, targetScore: finalTarget } });
   };
 
   return (
@@ -93,9 +110,48 @@ export default function GameSetup() {
             </div>
 
             {/* Selected difficulty description */}
-            <p className="text-xs text-gray-400 mb-4">
+            <p className="text-xs text-gray-400 mb-3">
               {difficulties.find(d => d.id === selectedDifficulty)?.description}
             </p>
+
+            {/* Target Score Selector */}
+            <div className="mb-3">
+              <p className="text-xs text-gray-400 mb-2">Game Length (first to lose!)</p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {targetScoreOptions.map((opt) => {
+                  const isSelected = targetScore === opt.value;
+                  return (
+                    <motion.button
+                      key={opt.value ?? "single"}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        setTargetScore(opt.value);
+                        setShowCustomInput(opt.value === "custom");
+                      }}
+                      className={`px-3 py-1.5 rounded-lg font-medium text-xs transition-all
+                        ${isSelected
+                          ? "bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg"
+                          : "bg-white/10 text-gray-300 hover:bg-white/20"}`}
+                    >
+                      {opt.label}
+                    </motion.button>
+                  );
+                })}
+              </div>
+              {showCustomInput && (
+                <div className="mt-2 flex items-center justify-center gap-2">
+                  <input
+                    type="number"
+                    min="10"
+                    max="200"
+                    value={customScore}
+                    onChange={(e) => setCustomScore(e.target.value)}
+                    placeholder="Enter points (10-200)"
+                    className="w-32 px-2 py-1 rounded-lg bg-white/10 border border-white/20 text-white text-sm placeholder-gray-400 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+              )}
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
               <motion.button

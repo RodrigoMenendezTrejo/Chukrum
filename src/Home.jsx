@@ -44,7 +44,6 @@ export default function Home() {
                 setStats(snap.exists() ? snap.data() : {});
                 const seen = localStorage.getItem(`chukrum_seen_tip_${u.uid}`);
                 if (!seen) {
-                    console.log("Tooltip should show for", u.uid);
                     setShowTip(true);
                 }
 
@@ -71,7 +70,6 @@ export default function Home() {
     };
 
     if (!user) return null;
-    console.log("showTip:", showTip);
     return (
 
         <div className="relative min-h-screen overflow-hidden flex flex-col items-center justify-center bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 text-white p-6">

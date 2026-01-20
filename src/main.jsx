@@ -5,8 +5,15 @@ import App from "./App.jsx";
 import Home from "./Home.jsx";
 import Profile from "./Profile.jsx";
 import GameSetup from "./GameSetup.jsx"; // 👈 Add this import
+import LeaderboardPage from "./LeaderboardPage.jsx";
 import "./index.css";
 import Game from "./Game.jsx";
+
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
+
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -18,6 +25,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/profile" element={<Profile />} />
         <Route path="/game-setup" element={<GameSetup />} /> {/* 👈 Add this line */}
         <Route path="/game" element={<Game />} />
+        <Route path="/leaderboard" element={<LeaderboardPage />} />
+
 
       </Routes>
     </BrowserRouter>
