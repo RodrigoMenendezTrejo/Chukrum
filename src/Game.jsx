@@ -1583,19 +1583,19 @@ export default function Game() {
           {difficulty === "extreme" && <Flame className="w-4 h-4" />}
           {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
         </div>
-
-        {/* Multi-match Score Display */}
-        {targetScore !== null && (
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full text-sm font-bold shadow-lg bg-gradient-to-r from-purple-500 to-indigo-600">
-            <span>Match {matchNumber}</span>
-            <span className="text-white/60">|</span>
-            <span className="text-green-300">You: {cumulativeP1Score}</span>
-            <span className="text-white/60">-</span>
-            <span className="text-red-300">Bot: {cumulativeP2Score}</span>
-            <span className="text-white/60">/ {targetScore}</span>
-          </div>
-        )}
       </div>
+
+      {/* Multi-match Score Display - separate row for mobile */}
+      {targetScore !== null && (
+        <div className="flex items-center justify-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-lg bg-gradient-to-r from-purple-500 to-indigo-600 mb-2">
+          <span>Match {matchNumber}</span>
+          <span className="text-white/60">|</span>
+          <span className="text-green-300">You: {cumulativeP1Score}</span>
+          <span className="text-white/60">-</span>
+          <span className="text-red-300">Bot: {cumulativeP2Score}</span>
+          <span className="text-white/60">/ {targetScore}</span>
+        </div>
+      )}
 
       <div className="bg-black/40 backdrop-blur-sm px-3 sm:px-6 py-2 sm:py-3 rounded-xl text-xs sm:text-sm md:text-lg font-medium mb-2 sm:mb-4 shadow-lg max-w-2xl text-center">{message}</div>
 
