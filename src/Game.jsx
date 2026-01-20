@@ -55,6 +55,9 @@ export default function Game() {
   const [discardPile, setDiscardPile] = useState([]);
   const [player1Hand, setPlayer1Hand] = useState([]);
   const [player2Hand, setPlayer2Hand] = useState([]);
+  // Refs to track latest hand values (avoids stale closure in endGame)
+  const player1HandRef = useRef([]);
+  const player2HandRef = useRef([]);
   const [currentPlayer, setCurrentPlayer] = useState(1);
   const [message, setMessage] = useState("Welcome to Chukrum! Your turn — draw from the pile.");
   const [drawnCard, setDrawnCard] = useState(null);
@@ -107,6 +110,15 @@ export default function Game() {
   useEffect(() => {
     startNewGame();
   }, []);
+
+  // Keep hand refs in sync with state (so endGame uses fresh values)
+  useEffect(() => {
+    player1HandRef.current = player1Hand;
+  }, [player1Hand]);
+
+  useEffect(() => {
+    player2HandRef.current = player2Hand;
+  }, [player2Hand]);
 
   const startNewGame = () => {
     // Reset refs before setting state to prevent race conditions
@@ -185,8 +197,9 @@ export default function Game() {
 
   const endGame = useCallback(() => {
     setGamePhase("ended");
-    const p1Score = calculateScore(player1Hand);
-    const p2Score = calculateScore(player2Hand);
+    // Use refs for fresh values (state might be stale in closure)
+    const p1Score = calculateScore(player1HandRef.current);
+    const p2Score = calculateScore(player2HandRef.current);
 
     // Update cumulative scores
     const newCumulativeP1 = cumulativeP1Score + p1Score;
@@ -270,7 +283,7 @@ export default function Game() {
         setMessage(`It's a tie! 🤝`);
       }
     }
-  }, [player1Hand, player2Hand, targetScore, cumulativeP1Score, cumulativeP2Score, matchNumber]);
+  }, [targetScore, cumulativeP1Score, cumulativeP2Score, matchNumber]);
 
   // Start next match in multi-match mode (preserves cumulative scores)
   const startNextMatch = () => {
