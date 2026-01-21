@@ -2,8 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
-  @apply min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 text-white;
+html,
+body {
+  @apply min-h-screen w-full m-0 p-0 bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 text-white;
+  overflow-x: hidden;
+}
+
+#root {
+  @apply min-h-screen w-full;
 }
 
 /* Card sizes - responsive */
@@ -30,6 +36,7 @@ html, body {
     height: 5rem;
     font-size: 1rem;
   }
+
   .card-responsive-lg {
     width: 5rem;
     height: 7rem;
@@ -43,6 +50,7 @@ html, body {
     height: 10rem;
     font-size: 2.25rem;
   }
+
   .card-responsive-lg {
     width: 6rem;
     height: 8rem;
