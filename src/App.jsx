@@ -24,6 +24,10 @@ export default function App() {
       if (isRegistering) {
         // Register new user
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
+
+        // Generate random 6-char friend code
+        const friendCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
         const userRef = doc(db, "users", userCred.user.uid);
         await setDoc(userRef, {
           email,
@@ -31,6 +35,8 @@ export default function App() {
           wins: 0,
           losses: 0,
           gamesPlayed: 0,
+          friendCode,
+          friends: [] // Initialize empty friends list
         });
         toast.success("Account created! You can now log in.");
         setIsRegistering(false);
@@ -93,8 +99,8 @@ export default function App() {
             {loading
               ? "Please wait..."
               : isRegistering
-              ? "Register"
-              : "Login"}
+                ? "Register"
+                : "Login"}
           </button>
         </form>
 
