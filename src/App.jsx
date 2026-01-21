@@ -36,7 +36,8 @@ export default function App() {
           losses: 0,
           gamesPlayed: 0,
           friendCode,
-          friends: [] // Initialize empty friends list
+          friends: [], // Initialize empty friends list
+          username: email.split('@')[0] // Default username from email
         });
         toast.success("Account created! You can now log in.");
         setIsRegistering(false);

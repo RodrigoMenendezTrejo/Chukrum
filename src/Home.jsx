@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "./firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { signOut } from "firebase/auth";
+import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { Trophy, Users, Gamepad2, LogOut, User } from "lucide-react";
 import { createPortal } from "react-dom";
@@ -10,6 +11,7 @@ export default function Home() {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [stats, setStats] = useState(null);
+    const [loadingStats, setLoadingStats] = useState(true);
     const [showTip, setShowTip] = useState(false);
     const tooltip = showTip ? (
         <div
@@ -34,22 +36,33 @@ export default function Home() {
 
 
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(async (u) => {
+        const unsubscribeAuth = auth.onAuthStateChanged((u) => {
             if (!u) {
                 navigate("/login");
             } else {
                 setUser(u);
-                const ref = doc(db, "users", u.uid);
-                const snap = await getDoc(ref);
-                setStats(snap.exists() ? snap.data() : {});
-                const seen = localStorage.getItem(`chukrum_seen_tip_${u.uid}`);
-                if (!seen) {
-                    setShowTip(true);
-                }
 
+                // Use onSnapshot for real-time updates and better reliability
+                const ref = doc(db, "users", u.uid);
+                const unsubscribeSnapshot = onSnapshot(ref, (snap) => {
+                    if (snap.exists()) {
+                        setStats(snap.data());
+                    } else {
+                        console.log("No user profile found");
+                        setStats({});
+                    }
+                    setLoadingStats(false);
+                }, (error) => {
+                    console.error("Error fetching user stats:", error);
+                    toast.error("Failed to load profile");
+                    setLoadingStats(false);
+                });
+
+                // Cleanup subscription when auth state changes or component unmounts
+                return () => unsubscribeSnapshot();
             }
         });
-        return unsubscribe;
+        return unsubscribeAuth;
     }, [navigate]);
 
     // Auto-hide tooltip after 5 seconds
@@ -69,10 +82,18 @@ export default function Home() {
         navigate("/login");
     };
 
-    if (!user) return null;
+    if (!user || loadingStats) return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+        </div>
+    );
+
+    const displayName = stats?.username || user?.email?.split('@')[0] || "Adventurer";
+
     return (
 
         <div className="relative min-h-screen overflow-hidden flex flex-col items-center justify-center bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 text-white p-6">
+
 
             {/* === Falling cards background === */}
             {/* Falling cards background */}
@@ -214,7 +235,7 @@ export default function Home() {
                     </motion.div>
 
                     <h1 className="text-4xl font-bold text-green-100 mb-2">
-                        Welcome, {stats?.username || "Adventurer"}!
+                        Welcome, {displayName}!
                     </h1>
                     {stats?.about && (
                         <p className="text-gray-300 text-sm italic max-w-md mx-auto">
