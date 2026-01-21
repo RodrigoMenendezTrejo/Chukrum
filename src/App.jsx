@@ -7,7 +7,7 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export default function App() {
   const navigate = useNavigate();                 // 👈
@@ -39,18 +39,18 @@ export default function App() {
           friends: [], // Initialize empty friends list
           username: email.split('@')[0] // Default username from email
         });
-        toast.success("Account created! You can now log in.");
+        toast.success("Account created! You can now log in.", { duration: 3000 });
         setIsRegistering(false);
       } else {
         // Login existing user
         await signInWithEmailAndPassword(auth, email, password);
-        toast.success("Welcome back!");
+        toast.success("Welcome back!", { duration: 3000 });
         // TODO: navigate to Home page later
         navigate("/home");
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.message);
+      toast.error(error.message, { duration: 4000 });
     }
 
     setLoading(false);
@@ -58,7 +58,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 p-4">
-      <Toaster />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
