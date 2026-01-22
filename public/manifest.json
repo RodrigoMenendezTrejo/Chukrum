@@ -4,8 +4,8 @@
   "description": "A strategic card game - lowest score wins!",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1a1a2e",
-  "theme_color": "#16213e",
+  "background_color": "#14532d",
+  "theme_color": "#14532d",
   "orientation": "portrait",
   "icons": [
     {
